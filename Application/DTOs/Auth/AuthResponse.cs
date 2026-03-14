@@ -1,0 +1,9 @@
+namespace Application.DTOs.Auth;
+
+public record AuthResponse(
+    Guid UserId,
+    string Username,
+    string Email,
+    string Role,
+    string Token
+);
