@@ -1,0 +1,135 @@
+@page
+@model ModeratorWeb.Pages.Support.IndexModel
+@{ ViewData["Title"] = "Поддержка"; Layout = "/Pages/Shared/_Layout.cshtml"; }
+
+<h2 style="color:#1a1a2e; margin-bottom:24px;">Обращения в поддержку</h2>
+
+<!-- Фильтр по статусу -->
+<div style="display:flex; gap:8px; margin-bottom:28px; flex-wrap:wrap;">
+    @foreach (var (key, label, icon) in new[]{
+        ("New",        "Новые",       ""),
+        ("InProgress", "В работе",    ""),
+        ("Resolved",   "Решённые",   ""),
+        ("Closed",     "Закрытые",   "")
+    })
+    {
+        var isActive = Model.Status == key;
+        <a href="?status=@key" style="
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 18px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: @(isActive ? "600" : "400");
+            border: 1.5px solid @(isActive ? StatusBorderColor(key) : "#e0ddf5");
+            background: @(isActive ? StatusBgColor(key) : "#faf9ff");
+            color: @(isActive ? StatusTextColor(key) : "#6b6880");
+            transition: all .2s;
+        ">
+            <span>@icon</span>
+            @label
+            @if (isActive)
+            {
+                <span style="
+                    background: @StatusDotColor(key);
+                    color: #fff;
+                    border-radius: 20px;
+                    font-size: 11px;
+                    font-weight: 700;
+                    padding: 1px 7px;
+                    margin-left: 2px;
+                ">@Model.Tickets.Count</span>
+            }
+        </a>
+    }
+</div>
+
+@if (!Model.Tickets.Any())
+{
+    <div style="text-align:center; padding:48px 24px; color:#9a9db0;">
+        <div style="font-size:36px; margin-bottom:12px;">📭</div>
+        <p style="font-size:14px;">Нет обращений со статусом «@Model.Status»</p>
+    </div>
+}
+
+<div style="display:flex; flex-direction:column; gap:12px;">
+@foreach (var t in Model.Tickets)
+{
+    <div class="card" style="cursor:pointer; transition: box-shadow .2s;"
+         onclick="location.href='/Support/Chat?ticketId=@t.Id'"
+         onmouseenter="this.style.boxShadow='0 4px 20px rgba(124,109,240,0.12)'"
+         onmouseleave="this.style.boxShadow=''">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="color:#1a1a2e; font-weight:600; font-size:15px;">@t.Subject</span>
+            <span style="
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                padding: 3px 12px;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 600;
+                background: @StatusBgColor(t.Status);
+                color: @StatusTextColor(t.Status);
+                border: 1px solid @StatusBorderColor(t.Status);
+            ">@StatusLabel(t.Status)</span>
+        </div>
+        <p style="color:#7c6df0; font-size:13px; margin-bottom:8px;">👤 @t.AuthorUsername</p>
+        <p style="color:#6b6880; font-size:14px; margin-bottom:12px; line-height:1.5;">
+            @(t.Message.Length > 120 ? t.Message[..120] + "…" : t.Message)
+        </p>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="color:#b0aec0; font-size:12px;">
+                🕐 @t.CreatedAt.ToString("dd.MM.yyyy")
+            </span>
+            @if (t.Status == "New")
+            {
+                <form method="post" asp-page-handler="Assign"
+                      onclick="event.stopPropagation()">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="ticketId" value="@t.Id" />
+                    <button type="submit" class="btn btn-primary"
+                            style="font-size:13px; padding:6px 16px;">
+                        ⚙️ Взять в работу
+                    </button>
+                </form>
+            }
+        </div>
+    </div>
+}
+</div>
+
+@functions {
+    string StatusBgColor(string s) => s switch {
+        "New"        => "#fff8e6",
+        "InProgress" => "#f0eef9",
+        "Resolved"   => "#edf7f2",
+        _            => "#f3f3f5"
+    };
+    string StatusTextColor(string s) => s switch {
+        "New"        => "#a06000",
+        "InProgress" => "#5a4fa0",
+        "Resolved"   => "#2e7d55",
+        _            => "#6b6880"
+    };
+    string StatusBorderColor(string s) => s switch {
+        "New"        => "#f5d98a",
+        "InProgress" => "#c8c0f0",
+        "Resolved"   => "#a8dfc0",
+        _            => "#dddbe8"
+    };
+    string StatusDotColor(string s) => s switch {
+        "New"        => "#f0a500",
+        "InProgress" => "#7c6df0",
+        "Resolved"   => "#4caf82",
+        _            => "#9a9db0"
+    };
+    string StatusLabel(string s) => s switch {
+        "New"        => "🆕 Новый",
+        "InProgress" => "⚙️ В работе",
+        "Resolved"   => "✅ Решён",
+        _            => "🔒 Закрыт"
+    };
+}

@@ -44,4 +44,23 @@ public class FriendRepository(GameRpgDbContext context) : IFriendRepository
 
     public void UpdateRequest(FriendRequest request)
         => context.FriendRequests.Update(request);
+    
+    public async Task<Friendship?> GetFriendshipAsync(Guid userId1, Guid userId2, CancellationToken ct = default)
+        => await context.Friendships
+            .FirstOrDefaultAsync(f =>
+                (f.UserId1 == userId1 && f.UserId2 == userId2) ||
+                (f.UserId1 == userId2 && f.UserId2 == userId1), ct);
+    
+    public async Task<Friendship?> GetByPairAsync(Guid a, Guid b, CancellationToken ct)
+    {
+        return await context.Friendships
+            .FirstOrDefaultAsync(
+                f => (f.UserId1 == a && f.UserId2 == b) ||
+                     (f.UserId1 == b && f.UserId2 == a), ct);
+    }
+
+
+    public void RemoveFriendship(Friendship friendship)
+        => context.Friendships.Remove(friendship);
+
 }

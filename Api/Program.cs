@@ -27,6 +27,7 @@ builder.Services.AddScoped<TradeService>();
 builder.Services.AddScoped<FriendService>();
 builder.Services.AddScoped<SupportService>();
 builder.Services.AddScoped<AdminService>();
+builder.Services.AddScoped<ModeratorService>();
 
 // JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
@@ -83,6 +84,8 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("MauiClient", policy =>
         policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+    options.AddPolicy("ModeratorWeb", policy =>
+        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 });
 
 var app = builder.Build();
@@ -96,10 +99,8 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var db = services.GetRequiredService<GameRpgDbContext>();
-
-
+        db.Database.EnsureDeleted();
         db.Database.Migrate();
-        
 
         if (env.IsDevelopment())
         {
@@ -125,6 +126,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("MauiClient");
+app.UseCors("ModeratorWeb");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

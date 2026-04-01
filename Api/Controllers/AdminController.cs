@@ -8,7 +8,7 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("api/admin")]
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "Moderator")]
 public class AdminController(AdminService adminService) : ControllerBase
 {
     [HttpGet("users")]

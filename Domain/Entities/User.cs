@@ -12,6 +12,7 @@ public class User : BaseEntity, IAggregateRoot
     public UserRole Role { get; private set; } = UserRole.Player;
     public bool IsBlocked { get; private set; }
     public DateTime? DateOfBirth { get; private set; }
+    public DateTime? BlockedUntil { get; private set; }
     
     public Character? Character { get; private set; }
     public IReadOnlyCollection<FriendRequest> SentFriendRequests => _sentFriendRequests.AsReadOnly();

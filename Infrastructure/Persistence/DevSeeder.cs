@@ -27,7 +27,7 @@ public static class DevSeeder
 
             var admin = User.Create("Admin", new Email("admin@example.com"),
                 hasher.Hash("Admin"), null);
-            admin.ChangeRole(UserRole.Admin);
+            admin.ChangeRole(UserRole.Moderator);
 
             var moderator = User.Create("Mod", new Email("moderator@example.com"),
                 hasher.Hash("pass123"), null);
@@ -162,7 +162,9 @@ public static class DevSeeder
             
             await context.InventoryItems.AddRangeAsync(
                 InventoryItem.Create(aliceChar.Id, elixirOfPower.Id, 2),
-                InventoryItem.Create(aliceChar.Id, healthPotion.Id,  5));
+                InventoryItem.Create(aliceChar.Id, healthPotion.Id,  5),
+                InventoryItem.Create(aliceChar.Id, ironSword.Id,    1),
+                InventoryItem.Create(aliceChar.Id, leatherArmor.Id, 1));
             
             await context.InventoryItems.AddRangeAsync(
                 InventoryItem.Create(bobChar.Id, steelAxe.Id,    1),

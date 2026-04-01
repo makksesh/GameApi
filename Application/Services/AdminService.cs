@@ -23,13 +23,13 @@ public class AdminService(
         var admin = await userRepository.GetByIdAsync(adminId, ct)
             ?? throw new NotFoundException(nameof(User), adminId);
 
-        if (admin.Role != UserRole.Admin)
+        if (admin.Role != UserRole.Moderator)
             throw new ForbiddenException("Only admins can block users.");
 
         var target = await userRepository.GetByIdAsync(targetUserId, ct)
             ?? throw new NotFoundException(nameof(User), targetUserId);
 
-        if (target.Role == UserRole.Admin)
+        if (target.Role == UserRole.Moderator)
             throw new BusinessRuleException("Cannot block another admin.");
 
         target.Block();
@@ -44,7 +44,7 @@ public class AdminService(
         var admin = await userRepository.GetByIdAsync(adminId, ct)
             ?? throw new NotFoundException(nameof(User), adminId);
 
-        if (admin.Role != UserRole.Admin)
+        if (admin.Role != UserRole.Moderator)
             throw new ForbiddenException("Only admins can unblock users.");
 
         var target = await userRepository.GetByIdAsync(targetUserId, ct)
@@ -66,7 +66,7 @@ public class AdminService(
         var admin = await userRepository.GetByIdAsync(adminId, ct)
             ?? throw new NotFoundException(nameof(User), adminId);
 
-        if (admin.Role != UserRole.Admin)
+        if (admin.Role != UserRole.Moderator)
             throw new ForbiddenException("Only admins can change roles.");
 
         if (!Enum.TryParse<UserRole>(request.Role, ignoreCase: true, out var newRole))

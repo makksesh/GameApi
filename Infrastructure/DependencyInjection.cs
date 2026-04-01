@@ -36,6 +36,7 @@ public static class DependencyInjection
         services.AddScoped<IFriendRepository,    FriendRepository>();
         services.AddScoped<ISupportRepository,   SupportRepository>();
         services.AddScoped<ISupportMessageRepository, SupportMessageRepository>(); 
+        services.AddScoped<ICharacterSkillRepository, CharacterSkillRepository>();
 
 
         // Security

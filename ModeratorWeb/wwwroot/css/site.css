@@ -1,0 +1,100 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+  color: var(--bs-secondary-color);
+  text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+  text-align: start;
+}
+
+/* ── Таблицы (светлая тема) ──────────────────────────── */
+table thead tr {
+  background: #f0eef9 !important;   /* постельный лавандовый, близкий к #7c6df0 */
+}
+
+table thead th {
+  color: #5a4fa0 !important;        /* тёмно-фиолетовый — читаемый на светлом */
+  font-size: 13px;
+  font-weight: 600;
+}
+
+table tbody tr {
+  border-bottom: 1px solid #ebebf0 !important;
+  transition: background .15s;
+}
+
+table tbody tr:hover {
+  background: #f8f7ff;
+}
+
+/* Текст ячеек */
+table tbody td {
+  color: #2d2a3e !important;        /* тёмный, хорошо читается на белом */
+}
+
+/* Дополнительные классы для цветовых состояний */
+table tbody td .text-muted-cell {
+  color: #7a7d8e;
+  font-size: 13px;
+}
+
+/* ── Общий текст страниц ─────────────────────────────── */
+h2 { color: #1a1a2e !important; }
+
+/* Описания/подписи под названиями в таблицах */
+table .item-description {
+  color: #9a9db0 !important;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+/* ── Вкладки (Database page) ─────────────────────────── */
+.tab-inactive {
+  background: #f0eef9 !important;
+  color: #5a4fa0 !important;
+}
+
+/* ── Формы внутри card на светлом фоне ──────────────── */
+.card label {
+  color: #6b6880 !important;
+  font-size: 13px;
+}
+
+/* Кнопка отмены в формах */
+.btn-cancel {
+  background: #f0eef9 !important;
+  color: #5a4fa0 !important;
+  border: 1px solid #d4cfee !important;
+}
+.btn-cancel:hover {
+  background: #e4e0f7 !important;
+}
+
+/* ── Пустое состояние ─────────────────────────────────── */
+.empty-hint {
+  color: #9a9db0;
+  margin-top: 16px;
+}

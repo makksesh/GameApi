@@ -28,4 +28,17 @@ public class Item : BaseEntity
             BasePrice   = basePrice,
             BonusStats  = bonusStats
         };
+    public void Update(string name, string description,
+        ItemType type, ItemRarity rarity,
+        Money basePrice, StatBlock? bonusStats)
+    {
+        Name = name;
+        Description = description;
+        Type = type;
+        Rarity = rarity;
+        BasePrice = basePrice;
+        BonusStats = bonusStats;
+        SetUpdatedAt();
+    }
+
 }

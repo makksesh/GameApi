@@ -50,7 +50,7 @@ public class SupportController(SupportService supportService) : ControllerBase
     #region Moderator endpoints
 
     [HttpGet]
-    [Authorize(Roles = "Moderator,Admin")]
+    [Authorize(Roles = "Moderator")]
     public async Task<IActionResult> GetByStatus(
         [FromQuery] SupportStatus status = SupportStatus.New,
         CancellationToken ct = default)
@@ -60,7 +60,7 @@ public class SupportController(SupportService supportService) : ControllerBase
     }
 
     [HttpPost("{ticketId:guid}/assign")]
-    [Authorize(Roles = "Moderator,Admin")]
+    [Authorize(Roles = "Moderator")]
     public async Task<IActionResult> Assign(Guid ticketId, CancellationToken ct)
     {
         var moderatorId = User.GetUserId();
@@ -69,7 +69,7 @@ public class SupportController(SupportService supportService) : ControllerBase
     }
 
     [HttpPost("{ticketId:guid}/resolve")]
-    [Authorize(Roles = "Moderator,Admin")]
+    [Authorize(Roles = "Moderator")]
     public async Task<IActionResult> Resolve(
         Guid ticketId,
         [FromBody] ResolveTicketRequest request,

@@ -10,7 +10,7 @@ public class CharacterSkillConfiguration : IEntityTypeConfiguration<CharacterSki
     {
         builder.HasKey(cs => cs.Id);
 
-        builder.Property(cs => cs.CurrentLevel).HasDefaultValue(1);
+        builder.Property(cs => cs.CurrentLevel);
 
         builder.HasOne(cs => cs.Skill)
             .WithMany()

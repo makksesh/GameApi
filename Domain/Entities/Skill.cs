@@ -23,4 +23,15 @@ public class Skill : BaseEntity
             MaxLevel    = maxLevel,
             LevelUpCost = levelUpCost
         };
+    public void Update(string name, string description,
+        SkillType type, int maxLevel, Money levelUpCost)
+    {
+        Name = name;
+        Description = description;
+        Type = type;
+        MaxLevel = maxLevel;
+        LevelUpCost = levelUpCost;
+        SetUpdatedAt();
+    }
+
 }

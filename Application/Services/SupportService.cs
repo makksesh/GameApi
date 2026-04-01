@@ -65,7 +65,7 @@ public class SupportService(
         var moderator = await userRepository.GetByIdAsync(moderatorId, ct)
             ?? throw new NotFoundException(nameof(User), moderatorId);
 
-        if (moderator.Role is not (UserRole.Moderator or UserRole.Admin))
+        if (moderator.Role != UserRole.Moderator)
             throw new ForbiddenException("Only moderators and admins can assign tickets.");
 
         var ticket = await supportRepository.GetByIdAsync(ticketId, ct)
@@ -107,8 +107,8 @@ public class SupportService(
         var user = await userRepository.GetByIdAsync(userId, ct)
             ?? throw new NotFoundException(nameof(User), userId);
 
-        if (ticket.AuthorId != userId && user.Role != UserRole.Admin)
-            throw new ForbiddenException("Only the author or admin can close a ticket.");
+        if (ticket.AuthorId != userId && user.Role != UserRole.Moderator)
+            throw new ForbiddenException("Only the author or moderator can close a ticket.");
 
         ticket.Close();
         supportRepository.Update(ticket);

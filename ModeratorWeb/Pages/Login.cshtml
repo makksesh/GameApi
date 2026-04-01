@@ -1,0 +1,148 @@
+@page
+@model LoginModel
+@{ Layout = null; }
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8"/>
+    <title>Управление</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Inter, sans-serif; }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: #f4f5f7;
+        }
+
+        .card {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 16px;
+            width: 360px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: #f0eef9;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h1 {
+            color: #1a1a2e;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        p {
+            color: #7c6df0;
+            text-align: center;
+            font-size: 13px;
+            margin-top: -6px;
+        }
+
+        label {
+            color: #6b6880;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+        }
+
+        input {
+            width: 100%;
+            background: #f9f9fb;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: #1a1a2e;
+            font-size: 14px;
+            outline: none;
+            transition: border-color .2s;
+        }
+
+        input:focus {
+            border-color: #7c6df0;
+            background: #fff;
+        }
+
+        .btn {
+            background: #7c6df0;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 4px;
+            transition: background .2s;
+        }
+
+        .btn:hover { background: #6a5dd4; }
+
+        .error {
+            background: #fff0f0;
+            color: #c0392b;
+            border: 1px solid #f5c6c6;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .divider {
+            height: 1px;
+            background: #ebebf0;
+            margin: 2px 0;
+        }
+    </style>
+</head>
+<body>
+<form method="post" class="card">
+    <div class="logo">
+        <div class="logo-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                 stroke="#7c6df0" stroke-width="2" stroke-linecap="round">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                <path d="M2 17l10 5 10-5"/>
+                <path d="M2 12l10 5 10-5"/>
+            </svg>
+        </div>
+        <h1>ModPanel</h1>
+    </div>
+    <p>Панель модератора</p>
+    <div class="divider"></div>
+
+    @if (Model.ErrorMessage is not null)
+    {
+        <div class="error">@Model.ErrorMessage</div>
+    }
+
+    <label>Имя пользователя</label>
+    <input asp-for="Input.Username" required />
+
+    <label>Пароль</label>
+    <input asp-for="Input.Password" type="password" required />
+
+    <button type="submit" class="btn">Войти</button>
+</form>
+</body>
+</html>

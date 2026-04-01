@@ -51,4 +51,12 @@ public class FriendsController(FriendService friendService) : ControllerBase
         await friendService.DeclineRequestAsync(userId, requestId, ct);
         return NoContent();
     }
+    
+    [HttpDelete("{friendUserId:guid}")]
+    public async Task<IActionResult> RemoveFriend(Guid friendUserId, CancellationToken ct)
+    {
+        var userId = User.GetUserId();
+        await friendService.RemoveFriendAsync(userId, friendUserId, ct);
+        return NoContent();
+    }
 }

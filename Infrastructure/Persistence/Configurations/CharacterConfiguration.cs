@@ -32,15 +32,25 @@ public class CharacterConfiguration : IEntityTypeConfiguration<Character>
                 .HasColumnType("numeric(18,2)")
                 .IsRequired();
         });
-
+        
+        // ✅ Указываем backing field для _skills
         builder.HasMany(c => c.Skills)
             .WithOne()
             .HasForeignKey(cs => cs.CharacterId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.Navigation(c => c.Skills)
+            .HasField("_skills")
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
+
+        // ✅ Указываем backing field для _inventory
         builder.HasMany(c => c.Inventory)
             .WithOne()
             .HasForeignKey(ii => ii.CharacterId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Navigation(c => c.Inventory)
+            .HasField("_inventory")
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
     }
 }

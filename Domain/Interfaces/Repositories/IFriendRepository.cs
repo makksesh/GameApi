@@ -12,4 +12,7 @@ public interface IFriendRepository
     Task AddRequestAsync(FriendRequest request, CancellationToken ct = default);
     Task AddFriendshipAsync(Friendship friendship, CancellationToken ct = default);
     void UpdateRequest(FriendRequest request);
+    
+    Task<Friendship?> GetFriendshipAsync(Guid userId1, Guid userId2, CancellationToken ct = default);
+    void RemoveFriendship(Friendship friendship);
 }

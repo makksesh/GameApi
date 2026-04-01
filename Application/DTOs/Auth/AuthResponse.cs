@@ -5,5 +5,7 @@ public record AuthResponse(
     string Username,
     string Email,
     string Role,
-    string Token
+    string Token,
+    bool IsBlocked,
+    DateTime? BlockedUntil  
 );

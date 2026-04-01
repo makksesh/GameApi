@@ -1,0 +1,315 @@
+@page
+@model ModeratorWeb.Pages.Database.IndexModel
+@{ ViewData["Title"] = "База данных"; Layout = "/Pages/Shared/_Layout.cshtml"; }
+
+<h2>База данных</h2>
+
+@* Вкладки *@
+<div style="display:flex; gap:8px; margin-bottom:28px;">
+    @foreach (var (label, key) in new[]{("⚔️ Навыки","skills"),("🧪 Предметы","items")})
+    {
+        <a href="?tab=@key"
+           style="padding:8px 20px; border-radius:8px; text-decoration:none; font-size:14px;
+                   background:@(Model.Tab==key?"#7c6df0":"#f0eef9");
+                   color:@(Model.Tab==key?"#fff":"#5a4fa0");">
+            @label
+        </a>
+    }
+</div>
+
+@* ══════════ НАВЫКИ ══════════ *@
+@if (Model.Tab == "skills")
+{
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <span style="color:#a0a3b1; font-size:14px;">Всего: @Model.Skills.Count</span>
+        <button onclick="toggleForm('skill-form')" class="btn btn-primary">+ Добавить навык</button>
+    </div>
+
+    @* Форма создания *@
+    <div id="skill-form" style="display:none;" class="card" style="margin-bottom:20px;">
+        <form method="post" asp-page-handler="CreateSkill">
+            @Html.AntiForgeryToken()
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+                <div>
+                    <label style="color:#a0a3b1;font-size:13px;">Название</label>
+                    <input name="name" style="width:100%;margin-top:4px;" required />
+                </div>
+                <div>
+                    <label style="color:#a0a3b1;font-size:13px;">Тип</label>
+                    <select name="type" style="width:100%;margin-top:4px;">
+                        <option>Active</option>
+                        <option>Passive</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="color:#a0a3b1;font-size:13px;">Макс. уровень</label>
+                    <input name="maxLevel" type="number" min="1" value="5"
+                           style="width:100%;margin-top:4px;" required />
+                </div>
+                <div>
+                    <label style="color:#a0a3b1;font-size:13px;">Стоимость прокачки</label>
+                    <input name="levelUpCost" type="number" min="0" step="0.01" value="100"
+                           style="width:100%;margin-top:4px;" required />
+                </div>
+            </div>
+            <label style="color:#a0a3b1;font-size:13px;">Описание</label>
+            <textarea name="description" style="width:100%;margin-top:4px;min-height:60px;" required></textarea>
+            <div style="display:flex;gap:8px;margin-top:12px;">
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+                <button type="button" onclick="toggleForm('skill-form')"
+                        class="btn" style="background:#2a2d3e;color:#a0a3b1;">Отмена</button>
+            </div>
+        </form>
+    </div>
+
+    <table style="width:100%;border-collapse:collapse;">
+        <thead>
+            <tr>
+                <th style="@Th">Название</th>
+                <th style="@Th">Тип</th>
+                <th style="@Th">Макс. ур.</th>
+                <th style="@Th">Стоимость</th>
+                <th style="@Th">Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var s in Model.Skills)
+        {
+            <tr style="border-bottom:1px solid #1a1c2a;">
+                <td style="@Td">
+                    <div style="font-weight:500;">@s.Name</div>
+                    <div class="item-description">@s.Description</div>
+                </td>
+                <td style="@Td">
+                    <span style="color:@(s.Type=="Active"?"#7c6df0":"#4caf82")">@s.Type</span>
+                </td>
+                <td style="@Td; color:#e0e0e0;">@s.MaxLevel</td>
+                <td style="@Td; color:#f0a500;">@s.LevelUpCost.ToString("F0") G</td>
+                <td style="@Td">
+                    <form method="post" asp-page-handler="DeleteSkill"
+                          onsubmit="return confirm('Удалить навык «@s.Name»?')">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@s.Id" />
+                        <button type="submit" class="btn btn-danger"
+                                style="font-size:12px;padding:4px 12px;">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@* ══════════ ПРЕДМЕТЫ ══════════ *@
+@if (Model.Tab == "items")
+{
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <span style="color:#a0a3b1; font-size:14px;">Всего: @Model.Items.Count</span>
+        <button onclick="toggleForm('item-form')" class="btn btn-primary">+ Добавить предмет</button>
+    </div>
+
+    <div id="item-form" style="display:none;" class="card" style="margin-bottom:20px;">
+        <form method="post" asp-page-handler="CreateItem">
+            @Html.AntiForgeryToken()
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:12px;">
+                <div>
+                    <label style="color:#a0a3b1;font-size:13px;">Название</label>
+                    <input name="itemName" style="width:100%;margin-top:4px;" required />
+                </div>
+                <div>
+                    <label style="color:#a0a3b1;font-size:13px;">Тип</label>
+                    <select name="itemType" style="width:100%;margin-top:4px;">
+                        @foreach (var t in new[]{"Weapon","Armor","Helmet","Boots","Ring","Potion","Material","QuestItem"})
+                        { <option>@t</option> }
+                    </select>
+                </div>
+                <div>
+                    <label style="color:#a0a3b1;font-size:13px;">Редкость</label>
+                    <select name="rarity" style="width:100%;margin-top:4px;">
+                        @foreach (var r in new[]{"Common","Uncommon","Rare","Epic","Legendary"})
+                        { <option>@r</option> }
+                    </select>
+                </div>
+                <div>
+                    <label style="color:#a0a3b1;font-size:13px;">Цена</label>
+                    <input name="basePrice" type="number" min="0" step="0.01"
+                           style="width:100%;margin-top:4px;" required />
+                </div>
+                <div>
+                    <label style="color:#a0a3b1;font-size:13px;">Бонус HP</label>
+                    <input name="bonusHealth" type="number" value="0"
+                           style="width:100%;margin-top:4px;" />
+                </div>
+                <div>
+                    <label style="color:#a0a3b1;font-size:13px;">Бонус Mana</label>
+                    <input name="bonusMana" type="number" value="0"
+                           style="width:100%;margin-top:4px;" />
+                </div>
+                <div>
+                    <label style="color:#a0a3b1;font-size:13px;">Бонус Armor</label>
+                    <input name="bonusArmor" type="number" value="0"
+                           style="width:100%;margin-top:4px;" />
+                </div>
+                <div>
+                    <label style="color:#a0a3b1;font-size:13px;">Бонус Damage</label>
+                    <input name="bonusDamage" type="number" value="0"
+                           style="width:100%;margin-top:4px;" />
+                </div>
+            </div>
+            <label style="color:#a0a3b1;font-size:13px;">Описание</label>
+            <textarea name="itemDescription" style="width:100%;margin-top:4px;min-height:60px;" required></textarea>
+            <div style="display:flex;gap:8px;margin-top:12px;">
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+                <button type="button" onclick="toggleForm('item-form')"
+                        class="btn" style="background:#2a2d3e;color:#a0a3b1;">Отмена</button>
+            </div>
+        </form>
+    </div>
+
+    <table style="width:100%;border-collapse:collapse;">
+        <thead>
+            <tr>
+                <th style="@Th">Название</th>
+                <th style="@Th">Тип</th>
+                <th style="@Th">Редкость</th>
+                <th style="@Th">Цена</th>
+                <th style="@Th">Бонусы</th>
+                <th style="@Th">Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model.Items)
+        {
+            <tr style="border-bottom:1px solid #1a1c2a;">
+                <td style="@Td">
+                    <div style="font-weight:500;">@item.Name</div>
+                    <div class="item-description">@item.Description</div>
+                </td>
+                <td style="@Td;color:#a0a3b1;">@item.Type</td>
+                <td style="@Td">
+                    <span style="color:@RarityColor(item.Rarity)">@item.Rarity</span>
+                </td>
+                <td style="@Td;color:#f0a500;">@item.BasePrice.ToString("F0") G</td>
+                <td style="@Td;font-size:12px;color:#a0a3b1;">
+                    @if (item.BonusHealth > 0) { <span>HP+@item.BonusHealth </span> }
+                    @if (item.BonusMana > 0)   { <span>MP+@item.BonusMana </span> }
+                    @if (item.BonusArmor > 0)  { <span>ARM+@item.BonusArmor </span> }
+                    @if (item.BonusDamage > 0) { <span>DMG+@item.BonusDamage</span> }
+                </td>
+                <td style="@Td">
+                    <form method="post" asp-page-handler="DeleteItem"
+                          onsubmit="return confirm('Удалить предмет «@item.Name»?')">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <button type="submit" class="btn btn-danger"
+                                style="font-size:12px;padding:4px 12px;">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@* ══════════ ПОЛЬЗОВАТЕЛИ ══════════ *@
+@if (Model.Tab == "users")
+{
+    <form method="get" style="margin-bottom:20px;">
+        <input type="hidden" name="tab" value="users" />
+        <input name="search" value="@Model.Search"
+               placeholder="Поиск по username, email или ID..."
+               style="width:100%;max-width:480px;" />
+    </form>
+
+    <table style="width:100%;border-collapse:collapse;">
+        <thead>
+            <tr>
+                <th style="@Th">Username</th>
+                <th style="@Th">Email</th>
+                <th style="@Th">Роль</th>
+                <th style="@Th">Статус</th>
+                <th style="@Th">Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var u in Model.Users)
+        {
+            <tr style="border-bottom:1px solid #1a1c2a;">
+                <td style="@Td;color:#fff;">@u.Username</td>
+                <td style="@Td;color:#a0a3b1;font-size:13px;">@u.Email</td>
+                <td style="@Td">
+                    <span style="color:@(u.Role=="Moderator"?"#7c6df0":"#a0a3b1")">@u.Role</span>
+                </td>
+                <td style="@Td">
+                    @if (u.IsBlocked)
+                    { <span style="color:#ff6b6b;font-weight:500;">Заблокирован</span> }
+                    else
+                    { <span style="color:#4caf82;font-weight:500;">Активен</span> }
+                </td>
+                <td style="@Td">
+                    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                        @* Блок / разблок *@
+                        <form method="post"
+                              asp-page-handler="@(u.IsBlocked ? "Unblock" : "Block")">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="userId" value="@u.Id" />
+                            <button type="submit"
+                                    class="btn @(u.IsBlocked ? "btn-success" : "btn-danger")"
+                                    style="font-size:12px;padding:4px 10px;">
+                                @(u.IsBlocked ? "Разблокировать" : "Заблокировать")
+                            </button>
+                        </form>
+
+                        @* Назначить модератором *@
+                        @if (u.Role == "Player")
+                        {
+                            <form method="post" asp-page-handler="MakeModerator">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="userId" value="@u.Id" />
+                                <button type="submit" class="btn"
+                                        style="font-size:12px;padding:4px 10px;
+                                               background:none;border:1px solid #7c6df0;color:#7c6df0;">
+                                    → Модератор
+                                </button>
+                            </form>
+                        }
+
+                        @* Удалить *@
+                        @if (u.Role != "Moderator")
+                        {
+                            <form method="post" asp-page-handler="DeleteUser"
+                                  onsubmit="return confirm('Удалить пользователя @u.Username?')">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="userId" value="@u.Id" />
+                                <button type="submit" class="btn btn-danger"
+                                        style="font-size:12px;padding:4px 10px;">Удалить</button>
+                            </form>
+                        }
+                    </div>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@functions {
+    const string Th = "padding:12px 16px;text-align:left;color:#7c6df0;font-size:13px;";
+    const string Td = "padding:12px 16px;";
+
+    string RarityColor(string r) => r switch {
+        "Common"    => "#a0a3b1",
+        "Uncommon"  => "#4caf82",
+        "Rare"      => "#4a9eff",
+        "Epic"      => "#b87fff",
+        "Legendary" => "#f0a500",
+        _           => "#fff"
+    };
+}
+
+<script>
+function toggleForm(id) {
+    const el = document.getElementById(id);
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+</script>

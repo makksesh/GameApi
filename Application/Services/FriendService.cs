@@ -113,4 +113,13 @@ public class FriendService(
 
         return result;
     }
+    
+    public async Task RemoveFriendAsync(Guid userId, Guid friendUserId, CancellationToken ct = default)
+    {
+        var friendship = await friendRepository.GetFriendshipAsync(userId, friendUserId, ct)
+                         ?? throw new NotFoundException(nameof(Friendship), friendUserId);
+
+        friendRepository.RemoveFriendship(friendship);
+        await unitOfWork.SaveChangesAsync(ct);
+    }
 }

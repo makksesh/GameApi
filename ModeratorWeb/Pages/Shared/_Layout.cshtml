@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width"/>
+    <title>⚔️ ModPanel — @ViewData["Title"]</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { display: flex; min-height: 100vh; background: #f4f5f7;
+               color: #1a1a2e; font-family: Inter, sans-serif; }
+
+        /* Sidebar */
+        .sidebar { width: 220px; background: #ffffff; display: flex;
+                   flex-direction: column; padding: 24px 0; min-height: 100vh;
+                   box-shadow: 2px 0 8px rgba(0,0,0,.06); }
+        .sidebar-logo { font-size: 18px; font-weight: 700; color: #1a1a2e;
+                        padding: 0 20px 24px;
+                        display: flex; align-items: center; gap: 10px; }
+        .sidebar-logo img { width: 28px; height: 28px; object-fit: contain; }
+        .sidebar-user { padding: 0 20px 20px; border-bottom: 1px solid #e8e8ee;
+                        margin-bottom: 12px; }
+        .sidebar-user span { display: block; }
+        .sidebar-user .name { color: #1a1a2e; font-weight: 600; font-size: 14px; }
+        .sidebar-user .role { color: #7c6df0; font-size: 11px; margin-top: 3px;
+                              text-transform: uppercase; letter-spacing: .4px; }
+        .sidebar a { display: flex; align-items: center; gap: 10px;
+                     padding: 11px 16px; text-decoration: none;
+                     color: #6b7280; border-radius: 10px; margin: 2px 8px;
+                     font-size: 14px; transition: all .2s; }
+        .sidebar a img.nav-icon { width: 18px; height: 18px; object-fit: contain;
+                                  opacity: .5; transition: opacity .2s; flex-shrink: 0; }
+        .sidebar a:hover { background: #f3f0ff; color: #7c6df0; }
+        .sidebar a:hover img.nav-icon { opacity: .8; }
+        .sidebar a.active { background: rgba(124, 109, 240, 0.12);
+                            color: #7c6df0; border-radius: 10px; }
+        .sidebar a.active img.nav-icon { opacity: 1; }
+        .logout-btn { margin-top: auto; display: flex; align-items: center; gap: 10px;
+                      background: none; border: 1px solid #d1d5db; color: #6b7280;
+                      padding: 10px 16px; border-radius: 10px; cursor: pointer;
+                      margin-left: 8px; margin-right: 8px; font-size: 14px;
+                      transition: all .2s; }
+        .logout-btn img { width: 18px; height: 18px; object-fit: contain; opacity: .5; }
+        .logout-btn:hover { border-color: #ff6b6b; color: #ff6b6b; }
+        .logout-btn:hover img { opacity: 1; }
+
+        /* Main */
+        main { flex: 1; padding: 32px; overflow-y: auto; }
+
+        /* Утилиты */
+        .badge { padding: 3px 10px; border-radius: 20px; font-size: 12px;
+                 color: #fff; font-weight: 500; }
+        .btn { padding: 8px 16px; border-radius: 8px; border: none;
+               cursor: pointer; font-size: 13px; font-weight: 500; }
+        .btn-primary { background: #7c6df0; color: #fff; }
+        .btn-danger  { background: none; border: 1px solid #ff6b6b; color: #ff6b6b; }
+        .btn-success { background: none; border: 1px solid #4caf82; color: #4caf82; }
+        input, textarea, select {
+            background: #f9f9fb; border: 1px solid #d1d5db; border-radius: 8px;
+            padding: 10px 14px; color: #1a1a2e; font-size: 14px; outline: none;
+            font-family: inherit; }
+        input:focus, textarea:focus { border-color: #7c6df0; }
+        .card { background: #ffffff; border-radius: 12px;
+                border: 1px solid #e8e8ee; padding: 20px;
+                box-shadow: 0 1px 4px rgba(0,0,0,.05); }
+        h2 { color: #1a1a2e; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <div class="sidebar-logo">⚔️ ModPanel</div>
+    <div class="sidebar-user">
+        <span class="name">@Context.Session.GetString("username")</span>
+        <span class="role">Модератор</span>
+    </div>
+    <nav>
+        <a href="/" class="@(Context.Request.Path == "/" || Context.Request.Path == "/Index" ? "active" : "")">
+            <img src="~/icons/home.png" alt="" class="nav-icon" />
+            Главная
+        </a>
+        <a href="/Players" class="@(Context.Request.Path.StartsWithSegments("/Players") ? "active" : "")">
+            <img src="~/icons/users.png" alt="" class="nav-icon" />
+            Пользователи
+        </a>
+        <a href="/Database" class="@(Context.Request.Path.StartsWithSegments("/Database") ? "active" : "")">
+            <img src="~/icons/database.png" alt="" class="nav-icon" />
+            База данных
+        </a>
+        <a href="/Support" class="@(Context.Request.Path.StartsWithSegments("/Support") ? "active" : "")">
+            <img src="~/icons/support.png" alt="" class="nav-icon" />
+            Поддержка
+        </a>
+    </nav>
+    <form method="post" action="/Login?handler=Logout">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="logout-btn">
+            <img src="~/icons/logout.png" alt="" />
+            Выйти
+        </button>
+    </form>
+</div>
+
+<main>
+    @RenderBody()
+</main>
+</body>
+</html>

@@ -23,5 +23,9 @@ public class CharacterRepository(GameRpgDbContext context) : ICharacterRepositor
         => await context.Characters.AddAsync(character, ct);
 
     public void Update(Character character)
-        => context.Characters.Update(character);
+    {
+        // EF Core отслеживает сущность автоматически после GetByUserIdAsync.
+        // Явный вызов не нужен, но оставляем для совместимости с интерфейсом.
+        // context.Entry(character).State = EntityState.Modified; — не нужно для tracked entity
+    }
 }

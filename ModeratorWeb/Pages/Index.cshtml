@@ -1,0 +1,344 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Главная";
+    var currentUsername = HttpContext.Session.GetString("username") ?? "Username";
+    var currentEmail = HttpContext.Session.GetString("email") ?? "";
+}
+
+<div class="home-page">
+
+    <!-- Профиль текущего модератора -->
+    <div class="current-moderator">
+        <div class="mod-avatar-wrap">
+            <div class="mod-avatar-placeholder">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+            </div>
+        </div>
+        <div class="mod-info">
+            <h1 class="mod-name">@currentUsername</h1>
+            @if (!string.IsNullOrEmpty(currentEmail))
+            {
+                <span class="mod-email">@currentEmail</span>
+            }
+            <span class="mod-badge">Модератор</span>
+        </div>
+    </div>
+
+    <!-- Секция модераторов -->
+    <section class="moderators-section">
+        <h2 class="section-title">Модераторы</h2>
+
+        @if (Model.ErrorMessage != null)
+        {
+            <div class="alert-error">@Model.ErrorMessage</div>
+        }
+
+        <div class="moderators-grid">
+            @foreach (var mod in Model.Moderators)
+            {
+                <div class="mod-card">
+                    <div class="mod-card-avatar">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </div>
+                    <div class="mod-card-name">@mod.Username</div>
+                    <div class="mod-card-email">@mod.Email</div>
+                </div>
+            }
+
+            <!-- Карточка добавления модератора -->
+            <button class="mod-card mod-card-add" onclick="openAddModal()">
+                <div class="add-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                </div>
+                <span class="add-label">Добавить модератора</span>
+            </button>
+        </div>
+    </section>
+</div>
+
+<!-- Модальное окно создания модератора -->
+<div class="modal-overlay" id="addModal" onclick="closeModal(event)">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Новый модератор</h3>
+            <button class="modal-close" onclick="closeAddModal()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+        <form method="post" asp-page-handler="CreateModerator">
+            @Html.AntiForgeryToken()
+            <div class="form-group">
+                <label>Имя пользователя</label>
+                <input type="text" name="Username" required placeholder="moderator_name" />
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="Email" required placeholder="mod@example.com" />
+            </div>
+            <div class="form-group">
+                <label>Пароль</label>
+                <input type="password" name="Password" required placeholder="••••••••" />
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-ghost" onclick="closeAddModal()">Отмена</button>
+                <button type="submit" class="btn btn-primary">Создать</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .home-page {
+        max-width: 900px;
+    }
+
+    /* Профиль текущего модератора */
+    .current-moderator {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 40px;
+        padding-bottom: 28px;
+        border-bottom: 1px solid #2a2d3e;
+    }
+    .mod-avatar-wrap {}
+    .mod-avatar-placeholder {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: #668CAE;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #7c6df0;
+    }
+    .mod-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .mod-name {
+        font-size: 26px;
+        font-weight: 700;
+        color: #000000;
+        margin: 0;
+    }
+    .mod-email {
+        font-size: 13px;
+        color: #7a7d8e;
+    }
+    .mod-badge {
+        display: inline-block;
+        margin-top: 4px;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: .5px;
+        text-transform: uppercase;
+        background: rgba(100, 34, 106, 0.30);
+        color: #c98fd4;
+        border: 1px solid rgba(100, 34, 106, 0.50);
+        width: fit-content;
+    }
+
+    /* Секция */
+    .section-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #000000;
+        margin-bottom: 20px;
+    }
+
+    /* Сетка карточек */
+    .moderators-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 16px;
+    }
+    .mod-card {
+        background: #F9F9F9;
+        border: 1px solid #2a2d3e;
+        border-radius: 14px;
+        padding: 24px 16px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        text-align: center;
+        transition: border-color .2s, box-shadow .2s;
+    }
+    .mod-card:hover {
+        border-color: rgba(100, 34, 106, 0.6);
+        box-shadow: 0 4px 20px rgba(100, 34, 106, 0.15);
+    }
+    .mod-card-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: #2a2d3e;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #7c6df0;
+        margin-bottom: 4px;
+    }
+    .mod-card-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: #000000;
+    }
+    .mod-card-email {
+        font-size: 12px;
+        color: #747474;
+        word-break: break-all;
+    }
+
+    /* Карточка добавления */
+    .mod-card-add {
+        background: none;
+        border: 2px dashed #2a2d3e;
+        cursor: pointer;
+        font-family: inherit;
+        transition: border-color .2s, background .2s;
+    }
+    .mod-card-add:hover {
+        border-color: rgba(100, 34, 106, 0.7);
+        background: rgba(100, 34, 106, 0.07);
+    }
+    .add-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: rgba(100, 34, 106, 0.20);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #c98fd4;
+    }
+    .add-label {
+        font-size: 13px;
+        color: #9a9db0;
+    }
+    .mod-card-add:hover .add-label {
+        color: #c98fd4;
+    }
+
+    /* Алерт ошибки */
+    .alert-error {
+        padding: 12px 16px;
+        border-radius: 8px;
+        background: rgba(255, 80, 80, 0.1);
+        border: 1px solid rgba(255, 80, 80, 0.3);
+        color: #ff9090;
+        font-size: 13px;
+        margin-bottom: 16px;
+    }
+
+    /* Модальное окно */
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.6);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        backdrop-filter: blur(2px);
+    }
+    .modal-overlay.open {
+        display: flex;
+    }
+    .modal {
+        background: #1a1c2a;
+        border: 1px solid #2a2d3e;
+        border-radius: 16px;
+        padding: 28px;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+    }
+    .modal-header h3 {
+        font-size: 18px;
+        font-weight: 600;
+        color: #fff;
+    }
+    .modal-close {
+        background: none;
+        border: none;
+        color: #7a7d8e;
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 6px;
+        display: flex;
+        transition: color .2s;
+    }
+    .modal-close:hover { color: #fff; }
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 16px;
+    }
+    .form-group label {
+        font-size: 12px;
+        font-weight: 500;
+        color: #9a9db0;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+    }
+    .form-group input {
+        width: 100%;
+    }
+    .modal-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 8px;
+    }
+    .btn-ghost {
+        background: none;
+        border: 1px solid #2a2d3e;
+        color: #9a9db0;
+        padding: 8px 18px;
+        border-radius: 8px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all .2s;
+    }
+    .btn-ghost:hover {
+        border-color: #4a4d60;
+        color: #fff;
+    }
+</style>
+
+<script>
+    function openAddModal() {
+        document.getElementById('addModal').classList.add('open');
+    }
+    function closeAddModal() {
+        document.getElementById('addModal').classList.remove('open');
+    }
+    function closeModal(e) {
+        if (e.target === document.getElementById('addModal')) closeAddModal();
+    }
+</script>

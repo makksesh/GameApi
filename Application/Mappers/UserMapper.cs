@@ -12,7 +12,9 @@ public static class UserMapper
             Username: user.Username,
             Email:    user.Email.Value,
             Role:     user.Role.ToString(),
-            Token:    token
+            Token:    token,
+            IsBlocked: user.IsBlocked,
+            BlockedUntil: user.BlockedUntil
         );
 
     public static UserDto ToDto(User user)

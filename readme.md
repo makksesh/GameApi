@@ -3,6 +3,7 @@
 Серверная часть RPG-приложения, реализованная на **ASP.NET Core Web API**.  
 Проект предоставляет REST API для мобильного клиента на **.NET MAUI** и реализует бизнес-логику игры: аутентификацию, персонажей, навыки, инвентарь, торговлю, друзей, поддержку и административные функции.
 
+
 ---
 
 ## Возможности
@@ -32,4 +33,11 @@ docker compose up -d
 dotnet restore
 dotnet build
 dotnet run --project Api/
+```
+
+# Запуск UI-клиента для модератора
+```commandline
+dotnet restore
+dotnet build
+dotnet run --project ModeratorWeb/
 ```

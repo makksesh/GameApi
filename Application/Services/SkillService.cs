@@ -10,6 +10,7 @@ namespace Application.Services;
 public class SkillService(
     ISkillRepository skillRepository,
     ICharacterRepository characterRepository,
+    ICharacterSkillRepository characterSkillRepository,
     IUnitOfWork unitOfWork)
 {
     public async Task<IEnumerable<SkillDto>> GetAllSkillsAsync(CancellationToken ct = default)
@@ -47,12 +48,16 @@ public class SkillService(
 
         character.Withdraw(skill.LevelUpCost);
         var characterSkill = CharacterSkill.Learn(character.Id, skillId);
-
-        characterRepository.Update(character);
+        await characterSkillRepository.AddAsync(characterSkill, ct);
+        Console.WriteLine($"[DEBUG] CharacterSkill Id: {characterSkill.Id}");
+        Console.WriteLine($"[DEBUG] CharacterId: {characterSkill.CharacterId}");
+        Console.WriteLine($"[DEBUG] SkillId: {characterSkill.SkillId}");
+        Console.WriteLine($"[DEBUG] CurrentLevel: {characterSkill.CurrentLevel}");
         await unitOfWork.SaveChangesAsync(ct);
-        
+        var saved = await characterSkillRepository.GetByIdAsync(characterSkill.Id, ct)
+                    ?? throw new NotFoundException(nameof(CharacterSkill), characterSkill.Id);
         return SkillMapper.ToCharacterSkillDto(
-            character.Skills.First(s => s.SkillId == skillId));
+            characterSkill);
     }
 
     public async Task<CharacterSkillDto> LevelUpSkillAsync(
@@ -71,8 +76,11 @@ public class SkillService(
 
         character.Withdraw(characterSkill.Skill.LevelUpCost);
         characterSkill.LevelUp();
+        Console.WriteLine($"[DEBUG] CharacterSkill Id: {characterSkill.Id}");
+        Console.WriteLine($"[DEBUG] CharacterId: {characterSkill.CharacterId}");
+        Console.WriteLine($"[DEBUG] SkillId: {characterSkill.SkillId}");
+        Console.WriteLine($"[DEBUG] CurrentLevel: {characterSkill.CurrentLevel}");
 
-        characterRepository.Update(character);
         await unitOfWork.SaveChangesAsync(ct);
 
         return SkillMapper.ToCharacterSkillDto(characterSkill);

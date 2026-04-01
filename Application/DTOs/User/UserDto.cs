@@ -9,3 +9,9 @@ public record UserDto(
     bool IsBlocked,
     DateTime CreatedAt
 );
+
+public record CreateUserDto(
+    string Username,
+    string Email,
+    string Password
+);

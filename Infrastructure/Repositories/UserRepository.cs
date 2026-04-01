@@ -15,7 +15,7 @@ public class UserRepository(GameRpgDbContext context) : IUserRepository
 
     public async Task<User?> GetByEmailAsync(string email, CancellationToken ct = default)
         => await context.Users
-            .FirstOrDefaultAsync(u => EF.Property<string>(u, "Email_Value") == email.ToLowerInvariant(), ct);
+            .FirstOrDefaultAsync(u => u.Email.Value == email.ToLowerInvariant(), ct);
 
     public async Task<IEnumerable<User>> GetAllAsync(CancellationToken ct = default)
         => await context.Users.ToListAsync(ct);

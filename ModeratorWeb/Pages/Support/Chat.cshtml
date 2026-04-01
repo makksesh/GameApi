@@ -1,0 +1,68 @@
+@page
+@model ModeratorWeb.Pages.Support.ChatModel
+@{ ViewData["Title"] = "Чат"; Layout = "/Pages/Shared/_Layout.cshtml"; }
+
+<a href="/Support" style="color:#7c6df0; font-size:14px; text-decoration:none;">
+    ← Назад к обращениям
+</a>
+<h2 style="margin-top:12px;">💬 Чат по обращению</h2>
+
+<!-- Лента сообщений -->
+<div id="chat" style="background:#12141f; border-radius:12px; padding:20px;
+     height:420px; overflow-y:auto; display:flex; flex-direction:column; gap:12px;
+     margin-bottom:16px;">
+    @if (!Model.Messages.Any())
+    {
+        <p style="color:#555; text-align:center;">Нет сообщений</p>
+    }
+    @foreach (var m in Model.Messages)
+    {
+        <div style="display:flex; flex-direction:column;
+                    align-items:@(m.IsFromModerator ? "flex-end" : "flex-start");">
+            <div style="max-width:65%; background:@(m.IsFromModerator ? "#7c6df0" : "#1a1c2a");
+                        border-radius:12px; padding:10px 14px;">
+                <span style="display:block; font-size:11px; color:rgba(255,255,255,.5); margin-bottom:4px;">
+                    @(m.IsFromModerator ? "🛡 Вы" : $"👤 {m.AuthorUsername}")
+                </span>
+                <p style="color:#fff; margin:0; font-size:14px; line-height:1.5;">@m.Text</p>
+                <span style="display:block; font-size:10px; color:rgba(255,255,255,.3);
+                             text-align:right; margin-top:4px;">
+                    @m.CreatedAt.ToString("HH:mm")
+                </span>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Отправка сообщения -->
+<form method="post" asp-page-handler="Send" style="display:flex; gap:8px; margin-bottom:12px;">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="ticketId" value="@Model.TicketId" />
+    <input name="text" placeholder="Написать сообщение..."
+           style="flex:1;" required />
+    <button type="submit" class="btn btn-primary">Отправить</button>
+</form>
+
+<!-- Завершить тикет -->
+<details style="margin-top:8px;">
+    <summary style="color:#4caf82; cursor:pointer; font-size:14px; user-select:none;">
+        ✅ Завершить обращение
+    </summary>
+    <form method="post" asp-page-handler="Resolve"
+          style="display:flex; gap:8px; margin-top:10px;">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="ticketId" value="@Model.TicketId" />
+        <textarea name="resolution" placeholder="Опишите решение..."
+              style="flex:1; min-height:64px; resize:vertical;" required></textarea>
+        <button type="submit" class="btn btn-success"
+                style="align-self:flex-end; padding:10px 20px;">
+            Подтвердить
+        </button>
+    </form>
+</details>
+
+<script>
+    // Автоскролл вниз при загрузке
+    const chat = document.getElementById('chat')
+    chat.scrollTop = chat.scrollHeight
+</script>

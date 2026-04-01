@@ -33,6 +33,14 @@ public class Character : BaseEntity, IAggregateRoot
             Balance = new Money(200) 
         };
     }
+    
+    public CharacterSkill LearnSkill(Guid skillId)
+    {
+        var characterSkill = CharacterSkill.Learn(Id, skillId);
+        _skills.Add(characterSkill);
+        SetUpdatedAt();
+        return characterSkill;
+    }
 
     public void AddExperience(int amount)
     {
